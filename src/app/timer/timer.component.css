@@ -1,0 +1,73 @@
+.container{
+  width: 500px;
+  height: 800px;
+  padding: 10px;
+}
+
+.display{
+  color: white;
+  font-size: 6rem;
+  font-weight: 400;
+}
+
+.clock{
+  height: 500px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.btn-div{
+  height: 300px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+.main-btn{
+  width: 150px;
+  height: 150px;
+  border-radius: 50%;
+  font-size: 30px;
+  background-color: transparent;
+}
+
+
+.start-btn{
+  color: rgba(92,175,51,0.8);
+  border: 3px solid rgba(92,175,51,0.8);
+  transition: 0.5s;
+}
+.start-btn:hover{
+  color: rgb(20,20,20);
+  background-color: rgba(92,175,51,0.8);
+}
+
+.stop-btn{
+  color: rgba(232,57,39,0.8);
+  border: 3px solid rgba(232,57,39,0.8);
+  transition: 0.5s;
+}
+.stop-btn:hover{
+  color: rgb(20,20,20);
+  background-color: rgba(232,57,39,0.8);
+}
+
+.wait-btn{
+  color: rgba(232,232,232,0.8);
+  border: 3px solid rgba(232,232,232,0.8);
+  transition: 0.5s;
+}
+.wait-btn:hover{
+  color: rgb(20,20,20);
+  background-color: rgba(232,232,232,0.8);
+}
+
+.reset-btn{
+  color:  rgba(112,39,83,0.8);
+  border: 3px solid  rgba(112,39,83,0.8);
+  transition: 0.5s;
+}
+.reset-btn:hover{
+  color: rgb(20,20,20);
+  background-color: rgba(112,39,83,0.8);
+}

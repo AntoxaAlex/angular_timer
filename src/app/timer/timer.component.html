@@ -1,0 +1,11 @@
+<div class="container">
+  <div class="clock">
+    <p class="display">{{convertTime(minutes)}}:{{convertTime(seconds)}}</p>
+  </div>
+  <div class="btn-div">
+    <button id="start_stop_btn" #startstopbtn class="main-btn start-btn">{{isStopped ? "Start" : "Stop"}}</button>
+    <button #waitbtn class="main-btn wait-btn">Wait</button>
+    <button #resetbtn class="main-btn reset-btn" (click)="reset()">Reset</button>
+  </div>
+</div>
+
