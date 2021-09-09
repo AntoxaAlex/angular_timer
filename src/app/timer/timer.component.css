@@ -71,3 +71,7 @@
   color: rgb(20,20,20);
   background-color: rgba(112,39,83,0.8);
 }
+
+.hidden{
+  display: none;
+}

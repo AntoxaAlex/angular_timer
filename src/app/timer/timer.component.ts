@@ -4,7 +4,8 @@ import {
   OnInit,
   AfterViewInit
 } from "@angular/core";
-import {fromEvent} from "rxjs";
+import {fromEvent,interval,merge} from "rxjs";
+import {takeUntil, map, buffer, debounceTime, filter} from "rxjs/operators";
 
 
 @Component({
@@ -18,20 +19,22 @@ export class TimerComponent implements OnInit,AfterViewInit{
   seconds:any
   //Create boolean properties,which provide information about state of timer
   isStarted:any
-  isStopped:any
   //Create interval property,that we will use to reset our timer
-  intervalID:any
-  //Create specific properties for our wait method
-  firstWaitClick:any
-  waitClicksCount:any
+  intervalObservable:any
+  //Clicks which stop timer
+  stopClicks:any
+
 
   //Create observables,which give us an ability to maintain events
   startTimerObservable:any
+  stopTimerObservable:any
   waitTimerObservable:any
   resetTimerObservable:any
 
+
   //Import button
-  @ViewChild("startstopbtn") start_stop_btn:any
+  @ViewChild("startbtn") start_btn:any
+  @ViewChild("stopbtn") stop_btn:any
   @ViewChild("waitbtn") wait_btn:any
   @ViewChild("resetbtn") reset_btn:any
 
@@ -40,72 +43,69 @@ export class TimerComponent implements OnInit,AfterViewInit{
       this.minutes = 0
       this.seconds = 0
       this.isStarted = false
-      this.isStopped = true
-      this.waitClicksCount = 0
+      this.intervalObservable = interval(1000)
   }
 
   //Define observables
   ngAfterViewInit(){
-    this.startTimerObservable = fromEvent(this.start_stop_btn.nativeElement,"click").subscribe(()=>{
-      this.isStopped = !this.isStopped
-      if(!this.isStopped){
-        this.start();
-      }else{
-        this.stop();
-      }
+    this.startTimerObservable = fromEvent(this.start_btn.nativeElement,"click")
+    this.stopTimerObservable = fromEvent(this.stop_btn.nativeElement,"click")
+    this.resetTimerObservable = fromEvent(this.reset_btn.nativeElement,"click")
+
+    const waitBuffer = fromEvent(this.wait_btn.nativeElement,"click").pipe(debounceTime(500))
+    this.waitTimerObservable = fromEvent(this.wait_btn.nativeElement,"click").pipe(
+      buffer(waitBuffer),
+      map(evt=>{
+        return evt.length
+      }),
+      filter(x=>x==2)
+    )
+
+    this.stopClicks = merge(
+      this.waitTimerObservable,
+      this.stopTimerObservable
+    )
+
+    //Subscriptions
+    this.startTimerObservable.subscribe(()=>{
+      this.intervalObservable.pipe(takeUntil(this.stopClicks)).subscribe(()=>{
+      this.start()
+      })
     })
-    this.waitTimerObservable = fromEvent(this.wait_btn.nativeElement,"click").subscribe(()=>{
-      setTimeout(()=>{
-        this.waitClicksCount = 0
-      },500)
-      if(this.waitClicksCount === 0){
-        this.firstWaitClick = new Date().getTime()
-        this.waitClicksCount++
-      }else if(this.waitClicksCount === 1){
-        if(this.checkTimeBetweenTwoClicks(this.firstWaitClick)){
-          this.wait()
-        }
-        this.waitClicksCount = 0
-      }
+
+    this.stopTimerObservable.subscribe(()=>{
+      this.stop()
     })
-    this.resetTimerObservable = fromEvent(this.reset_btn.nativeElement,"click").subscribe(()=>{
-      this.reset();
+
+    this.waitTimerObservable.subscribe(()=>{
+      this.isStarted = false
     })
-  }
+
+    this.resetTimerObservable.subscribe(()=>{
+      this.reset()
+    })
+    }
 
 
   start(){
     this.isStarted = true
     this.checkBtns()
-    if(!this.isStopped){
-      this.intervalID = setInterval(()=>{
-        this.seconds++
-        if(this.seconds === 59){
-          this.seconds = 0
-          this.minutes++
-        }
-      },1000)
+    this.seconds++
+    if(this.seconds === 59){
+      this.seconds = 0
+      this.minutes++
     }
   }
 
   stop(){
     this.isStarted = false
     this.checkBtns()
-    clearInterval(this.intervalID)
-    this.minutes = 0
-    this.seconds = 0
-  }
-  wait(){
-    this.isStarted = false
-    this.isStopped = true
-    this.checkBtns()
-    clearInterval(this.intervalID)
+    this.reset()
   }
   reset(){
     this.isStarted = true
-    this.checkBtns()
-    this.stop()
-    this.start()
+    this.minutes = 0
+    this.seconds = 0
   }
 
   //If number is less than 10,add extra 0 in front of number
@@ -116,25 +116,20 @@ export class TimerComponent implements OnInit,AfterViewInit{
     return num.toString()
   }
 
-  //Change start/stop button color
+  //Change start/stop button
   checkBtns(){
-    const startBtn = document.querySelector("#start_stop_btn")
-    if(startBtn){
+    const startBtn = document.querySelector("#start_btn")
+    const stopBtn = document.getElementById("stop_btn")
+
+    if(stopBtn && startBtn){
       if(this.isStarted){
-        startBtn.classList.remove("start-btn")
-        startBtn.classList.add("stop-btn")
-      }else {
-        startBtn.classList.remove("stop-btn")
-        startBtn.classList.add("start-btn")
+        stopBtn.classList.remove("hidden")
+        startBtn.classList.add("hidden")
+      }else{
+        startBtn.classList.remove("hidden")
+        stopBtn.classList.add("hidden")
       }
+
     }
   }
-
-  //Check time between clicks in wait observable
-  checkTimeBetweenTwoClicks(startTime:number):boolean{
-    const endTime = new Date().getTime()
-    const delta = endTime - startTime
-    return delta < 500
-  }
-
 }
