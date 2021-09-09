@@ -2,11 +2,11 @@
   <div class="clock">
     <p class="display">{{convertTime(minutes)}}:{{convertTime(seconds)}}</p>
   </div>
-  <div class="btn-div">
-    <button id="start_btn" #startbtn class="main-btn start-btn">Start</button>
-    <button id="stop_btn" #stopbtn class="main-btn stop-btn hidden">Stop</button>
-    <button #waitbtn class="main-btn wait-btn">Wait</button>
-    <button #resetbtn class="main-btn reset-btn" (click)="reset()">Reset</button>
+  <div [class]="{'btn-div':true}">
+    <button id="start_btn" #startbtn [class]="{'main-btn':true,'start-btn':true,'hidden':startInvisibility}">Start</button>
+    <button id="stop_btn" #stopbtn [class]="{'main-btn':true,'stop-btn':true,'hidden':stopInvisibility}">Stop</button>
+    <button #waitbtn [class]="{'main-btn':true, 'wait-btn':true}">Wait</button>
+    <button #resetbtn [class]="{'main-btn':true, 'reset-btn':true}">Reset</button>
   </div>
 </div>
 

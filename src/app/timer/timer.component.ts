@@ -23,6 +23,9 @@ export class TimerComponent implements OnInit,AfterViewInit{
   intervalObservable:any
   //Clicks which stop timer
   stopClicks:any
+  //Create visibility of start and stop button
+  startInvisibility:any
+  stopInvisibility:any
 
 
   //Create observables,which give us an ability to maintain events
@@ -44,6 +47,8 @@ export class TimerComponent implements OnInit,AfterViewInit{
       this.seconds = 0
       this.isStarted = false
       this.intervalObservable = interval(1000)
+      this.startInvisibility = false
+      this.stopInvisibility = true
   }
 
   //Define observables
@@ -89,7 +94,8 @@ export class TimerComponent implements OnInit,AfterViewInit{
 
   start(){
     this.isStarted = true
-    this.checkBtns()
+    this.startInvisibility = true
+    this.stopInvisibility = false
     this.seconds++
     if(this.seconds === 59){
       this.seconds = 0
@@ -99,7 +105,8 @@ export class TimerComponent implements OnInit,AfterViewInit{
 
   stop(){
     this.isStarted = false
-    this.checkBtns()
+    this.stopInvisibility = true
+    this.startInvisibility = false
     this.reset()
   }
   reset(){
@@ -114,22 +121,5 @@ export class TimerComponent implements OnInit,AfterViewInit{
       return `0${num}`
     }
     return num.toString()
-  }
-
-  //Change start/stop button
-  checkBtns(){
-    const startBtn = document.querySelector("#start_btn")
-    const stopBtn = document.getElementById("stop_btn")
-
-    if(stopBtn && startBtn){
-      if(this.isStarted){
-        stopBtn.classList.remove("hidden")
-        startBtn.classList.add("hidden")
-      }else{
-        startBtn.classList.remove("hidden")
-        stopBtn.classList.add("hidden")
-      }
-
-    }
   }
 }
